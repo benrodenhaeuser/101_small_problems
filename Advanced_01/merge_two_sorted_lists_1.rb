@@ -4,24 +4,27 @@
 # My solution: uses recursion
 
 def sorted_merge(arr1, arr2)
-  return merge(arr1, arr2, [])
+  merge(arr1, arr2, [])
 end
 
+# also uses recursion - probably not the most natural choice here
+#(see merge_two_sorted_lists_2.rb for an iterative version)
 def merge(arr1, arr2, result_so_far)
   if arr1 == []
     return result_so_far + arr2 # doesn't matter if arr2 is also empty
   elsif arr2 == []
     return result_so_far + arr1
   elsif arr1[0] < arr2[0] # both guaranteed to exist at this point
-    return merge(arr1.drop(1), arr2, result_so_far << arr1[0]) # drop does not mutate the array you call it on
+    return merge(arr1.drop(1), arr2, result_so_far << arr1[0])
+    # ^ drop does not mutate the array you call it on
   else # so arr2[0] <= arr1[0]
     return merge(arr1, arr2.drop(1), result_so_far << arr2[0])
   end
 end
 
 # tests
-arr1 = [1,5,6]
-arr2 = [2,4,6]
+arr1 = [1, 5, 6]
+arr2 = [2, 4, 6]
 p sorted_merge(arr1,arr2)
 p arr1
 p arr2

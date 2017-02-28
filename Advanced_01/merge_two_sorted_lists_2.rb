@@ -5,7 +5,7 @@
 
 def merge(arr1, arr2)
   result = []
-  while arr1 != [] && arr2 !=[]
+  while arr1 != [] && arr2 != []
     if arr1[0] < arr2[0]
       result << arr1[0]
       arr1 = arr1.drop(1)
@@ -23,9 +23,9 @@ def merge(arr1, arr2)
 end
 
 # tests
-a1 = [0,1,4]
-a2 = [2,3,5]
-p merge(a1,a2)
+a1 = [0, 1, 4]
+a2 = [2, 3, 5]
+p merge(a1, a2)
 p a1
 p a2
 
@@ -33,4 +33,4 @@ puts
 
 a1 = [1]
 a2 = [2]
-p merge(a1,a2)
+p merge(a1, a2)
