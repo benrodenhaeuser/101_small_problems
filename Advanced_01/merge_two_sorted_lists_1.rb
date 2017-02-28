@@ -1,7 +1,7 @@
 # merge two sorted (!) arrays without mutating them.
 # build the output array one element at a time, always in proper order.
 
-# Let's do this by recursion
+# My solution: uses recursion
 
 def sorted_merge(arr1, arr2)
   return merge(arr1, arr2, [])
