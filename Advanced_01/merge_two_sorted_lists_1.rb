@@ -19,6 +19,7 @@ def merge(arr1, arr2, result_so_far)
   end
 end
 
+# tests
 arr1 = [1,5,6]
 arr2 = [2,4,6]
 p sorted_merge(arr1,arr2)

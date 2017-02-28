@@ -1,6 +1,6 @@
 # the solution I came up with - kind of complicated logic
 
-def sort(ary)
+def merge_sort(ary)
   conquer(divide(ary)).to_s
 end
 
@@ -22,6 +22,7 @@ def conquer(ary)
   end
 end
 
+# recursive merge of two sorted lists
 def merge(arr1, arr2, result_so_far)
   if arr1 == []
     result_so_far + arr2 # doesn't matter if arr2 is also empty
@@ -34,8 +35,9 @@ def merge(arr1, arr2, result_so_far)
   end
 end
 
-p "sort([]):" + sort([])
-p "sort([1]):" + sort([1])
-p "sort([5,2,7,0]): " + sort([5,2,7,0])
-p "sort([5,2,7,0,11,1,10,5]): " + sort([5,2,7,0,11,1,10,5])
-p "sort([10,2,7,4,5]): " + sort([10,2,7,4,5])
+# tests
+p "merge_sort([]):" + merge_sort([]).to_s
+p "merge_sort([1]):" + merge_sort([1]).to_s
+p "merge_sort([5,2,7,0]): " + merge_sort([5,2,7,0]).to_s
+p "merge_sort([5,2,7,0,11,1,10,5]): " + merge_sort([5,2,7,0,11,1,10,5]).to_s
+p "merge_sort([10,2,7,4,5]): " + merge_sort([10,2,7,4,5]).to_s
