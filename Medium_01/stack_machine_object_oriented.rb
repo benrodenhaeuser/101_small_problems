@@ -6,14 +6,14 @@ class StackMachine
 
   def run program
     commands = program.split
-    commands.each { |command| execute command.downcase }
+    commands.each { |command| execute command }
   end
 
   def execute command
     if command.to_i.to_s == command # command is an integer
       self.write_to_register command.to_i
-    elsif self.respond_to?(command)
-      self.send(command)
+    elsif self.respond_to?(command.downcase)
+      self.send(command.downcase)
     else
       puts "Warning: ignoring command"
     end
