@@ -1,5 +1,6 @@
 # von Neumann's algorithm
 
+# "two sort a list, merge the sorted left half of the list with the sorted right half of the list"
 def merge_sort(ary)
   if ary.size <= 1
     ary

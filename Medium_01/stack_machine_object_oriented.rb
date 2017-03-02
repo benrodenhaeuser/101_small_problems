@@ -6,37 +6,20 @@ class StackMachine
 
   def run program
     commands = program.split
-    commands.each { |command| execute command }
+    commands.each { |command| execute command.downcase }
   end
 
   def execute command
-
     if command.to_i.to_s == command # command is an integer
-      self.register command.to_i
+      self.write_to_register command.to_i
+    elsif
+      self.respond_to?(command)
+        self.send(command)
+      else puts "Warning: ignoring command"
     end
-
-    case command
-    when 'PUSH'
-      self.push
-    when 'ADD'
-      self.add
-    when 'SUB'
-      self.sub
-    when 'MULT'
-      self.mult
-    when 'DIV'
-      self.div
-    when 'MOD'
-      self.mod
-    when 'POP'
-      self.pop
-    when 'PRINT'
-      self.print
-    end
-
   end
 
-  def register n
+  def write_to_register n
     @register = n
   end
 
@@ -76,5 +59,5 @@ end
 
 machine = StackMachine.new
 
-machine.run '3 PUSH 4 PUSH 5 PUSH PRINT'
+machine.run '3 PUSH 4 PUSH 5 PUSH PRINT PRUNT'
 machine.run 'ADD PRINT POP PRINT ADD PRINT'
