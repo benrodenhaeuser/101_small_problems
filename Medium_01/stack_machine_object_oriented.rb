@@ -12,11 +12,18 @@ class StackMachine
   def execute command
     if command.to_i.to_s == command # command is an integer
       self.write_to_register command.to_i
-    elsif self.respond_to?(command.downcase)
+    elsif self.permitted?(command)
       self.send(command.downcase)
     else
       puts "Warning: ignoring command"
     end
+  end
+
+  def permitted?(command)
+    if ["PUSH", "ADD", "SUB", "MULT", "DIV", "MOD", "POP", "PRINT"].include? command
+      return true
+    end
+    false
   end
 
   def write_to_register n
