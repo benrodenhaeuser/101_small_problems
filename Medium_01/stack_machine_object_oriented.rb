@@ -61,3 +61,9 @@ machine = StackMachine.new
 
 machine.run '3 PUSH 4 PUSH 5 PUSH PRINT PRUNT'
 machine.run 'ADD PRINT POP PRINT ADD PRINT'
+
+# 5
+# Unknown command
+# 10
+# 4
+# 7
