@@ -12,10 +12,10 @@ class StackMachine
   def execute command
     if command.to_i.to_s == command # command is an integer
       self.write_to_register command.to_i
-    elsif
-      self.respond_to?(command)
-        self.send(command)
-      else puts "Warning: ignoring command"
+    elsif self.respond_to?(command)
+      self.send(command)
+    else
+      puts "Warning: ignoring command"
     end
   end
 
