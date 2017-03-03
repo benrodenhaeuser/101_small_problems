@@ -10,7 +10,7 @@ class StackMachine
   end
 
   def execute command
-    if command.to_i.to_s == command # command is an integer
+    if command.to_i.to_s == command # command is an integer string
       self.write_to_register command.to_i
     elsif self.valid?(command)
       self.send(command.downcase)
@@ -19,7 +19,7 @@ class StackMachine
     end
   end
 
-  def valid?(command)
+  def valid? command
     result = false
     if ["PUSH", "ADD", "SUB", "MULT", "DIV", "MOD", "POP", "PRINT"].include? command
       result = true
@@ -67,12 +67,12 @@ end
 
 # test
 machine = StackMachine.new
-machine.run '3 PUSH 4 PUSH 5 PUSH PRINT PRUNT' # intentional typo: 'PRUNT'
+machine.run '3 PUSH 4 PRUNT PUSH 5 PUSH PRINT' # notice the intentional typo: 'PRUNT'
 machine.run 'ADD PRINT POP PRINT ADD PRINT'
 
 # =>
+# Warning: ignoring command
 # 5
-# Unknown command
 # 10
 # 4
 # 7
