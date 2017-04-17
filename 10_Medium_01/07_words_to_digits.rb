@@ -7,7 +7,7 @@ WORDS_TO_DIGITS = {
 }
 
 def word_to_digits(sentence)
-  words = sentence.split(/\b/)
+  words = sentence.split(/\b/) # '\b' matches word boundaries.
   words.each_with_index do |word, index|
     words[index] = WORDS_TO_DIGITS[word] if WORDS_TO_DIGITS.include?(word)
   end.join
