@@ -2,10 +2,11 @@ def run(program, machine)
   commands = program.split
   commands.each do |command|
     execute(command, machine)
-    print_state(machine) # log machine state to stdout
+    print_state(machine) # for debugging: log machine state
   end
 end
 
+# for debugging: log machine state
 def print_state(machine)
   puts "[#{machine[:stack]}, #{machine[:register]}]"
 end
