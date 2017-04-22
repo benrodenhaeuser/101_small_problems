@@ -26,14 +26,15 @@ end
 
 def start_days_months(year)
   start_days = [start_day = start_day_year(year)]
-  days_in_months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  days_in_months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30]
   days_in_months[1] = 29 if leap_year?(year)
 
-  (0..11).each do |month|
+  (0..10).each do |month|
     days_in_months[month].times { start_day = next_day(start_day) }
     start_days << start_day
   end
 
+  p start_days
   start_days
 end
 
@@ -43,6 +44,6 @@ def number_of_unlucky_days(year)
   end
 end
 
-p unlucky_days(2015) == 3
-p unlucky_days(1986) == 1
-p unlucky_days(2019) == 2
+p number_of_unlucky_days(2015) == 3
+p number_of_unlucky_days(1986) == 1
+p number_of_unlucky_days(2019) == 2
