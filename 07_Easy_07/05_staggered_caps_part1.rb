@@ -1,3 +1,11 @@
+# staggered case
+def staggered_case(string)
+  string.downcase.split('').map.with_index do |char, index|
+    index % 2 == 0 ? char.upcase : char
+  end.join
+end
+
+# further exploration
 def staggered_case(string, parity: 'even')
   choice = (parity == 'even' ? 0 : 1)
 
