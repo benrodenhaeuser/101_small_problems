@@ -40,8 +40,9 @@ def fizzbuzz(first, last)
   end
 end
 
-# my solution works, but it's bad practice. what we want to do is compute the whole string and print it.
-# this takes out all the complications we had to deal with above:
+# my solution works, but what we actually want to do is compute (and format)
+# the whole string and print it. this makes all the complications we had
+# to deal with above non-issues.
 
 def fizzbuzz_value(number)
   if number % 15 == 0
