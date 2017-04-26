@@ -38,7 +38,7 @@ def nearby_az(string)
 
 end
 
-# with nested loops
+# with two nested loops
 
 def nearby_az(string)
   index1 = 0
@@ -64,9 +64,6 @@ def nearby_az(string)
   false
 end
 
-
-# These are tests to check that your code is working. After writing
-# your solution, they should all print true.
 
 puts("\nTests for #nearby_az")
 puts("===============================================")
