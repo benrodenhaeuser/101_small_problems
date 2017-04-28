@@ -86,27 +86,34 @@ end
 # iterative solution
 
 # recursive method to get substrings
-def substrings(string)
-  if string.size == 1
-    [string]
-  else
-    [string] + (substrings(string[0...-1]) + substrings(string[1..-1])).uniq
-  end
-end
+# def substrings(string)
+#   if string.size == 1
+#     [string]
+#   else
+#     [string] + (substrings(string[0...-1]) + substrings(string[1..-1])).uniq
+#   end
+# end
 
 # iterative method to get substrings
-def substrings(string)
-  # for every valid index of string: get strings starting at that index
-  # collect them and return all of them (= array of strings)
-end
-
 def substrings_starting_at(string, index)
-  # return array of strings
+  substrings_at = []
+  string = string[index...string.size]
+  (0...string.size).each do |index|
+    substrings_at << string[0..index]
+  end
+  substrings_at
 end
 
+def substrings(string)
+  substrings = []
+  (0...string.size).each do |index|
+    substrings = substrings + substrings_starting_at(string, index)
+  end
+  substrings
+end
 
 def longest_palindrome(string)
-  p sorted_substrings = substrings(string).sort_by { |string| string.size }.reverse
+  sorted_substrings = substrings(string).sort_by { |string| string.size }.reverse
   sorted_substrings.each do |substring|
     return substring if palindrome?(substring)
   end
