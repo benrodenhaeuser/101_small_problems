@@ -23,7 +23,7 @@ APPROACH
     push char to new array
   end
 
-- (flatten and) join the new array
+- join the new array
 
 =end
 
@@ -32,16 +32,13 @@ def dasherize_number(num)
   dasherized = []
   chars.each_with_index do |char, index|
       if (chars[index].to_i.odd? || chars[index + 1].to_i.odd?) && index + 1 != chars.size
-        dasherized << [char, '-']
+        dasherized << char + '-'
       else
-        dasherized << [char]
+        dasherized << char
       end
   end
-  dasherized.flatten.join
+  dasherized.join
 end
-
-# These are tests to check that your code is working. After writing
-# your solution, they should all print true.
 
 puts("\nTests for #dasherize_number")
 puts("===============================================")
