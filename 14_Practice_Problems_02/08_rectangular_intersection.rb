@@ -16,21 +16,17 @@
 
 approach:
 
-- two rectangles do not intersect if the top_right of one of them is smaller than the bottom_left of the other one, where "smaller" is meant in a pairwise manner.
-
-
+- two rectangles do not intersect if the top_right corner of one of them is smaller than the bottom_left corner of the other one in at least one dimension (x-value or y-value).
 
 - if they do intersect, their intersection can be computed as described in the hint
 
 =end
 
-
-
 def smaller_or_equal(pair_1, pair_2)
   x_1, y_1 = pair_1
   x_2, y_2 = pair_2
 
-  x_1 <= x_2 && y_1 <= y_2
+  x_1 <= x_2 || y_1 <= y_2
 end
 
 
