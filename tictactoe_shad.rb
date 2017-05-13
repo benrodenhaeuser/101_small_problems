@@ -98,12 +98,14 @@ def ai_move(board, turns_played)
   sleep 0.5 if turns_played > 2
 end
 
+# observation: choose_move and explore_game_tree are a little similar. 
+
 def choose_move(board, turns_played)
   moves = valid_moves(board)
 
   move_values = {}
   moves.each do |move|
-    value = minimax(board, turns_played, move)
+    value = minimax(board, turns_played, move) # minimax is computed for a move
     next if value == -1
     move_values[move] = value
     break if value == 1
