@@ -17,6 +17,8 @@ so the main task is to implement column(matrix, index)
 
 =end
 
+require 'benchmark'
+
 # VERSION 1
 
 def transpose(matrix)
@@ -85,6 +87,9 @@ matrix = [
 ]
 
 new_matrix = transpose(matrix)
+
+puts Benchmark.realtime { transpose(matrix) }
+# 4.00003045797348e-06
 
 p new_matrix == [[1, 4, 3], [5, 7, 9], [8, 2, 6]]
 p matrix == [[1, 5, 8], [4, 7, 2], [3, 9, 6]]
