@@ -1,14 +1,21 @@
 class Animal
-  def initialize(name)
-    @name = name
+
+  def to_s
+    10
   end
+
 end
 
-class Mammal < Animal
-  def initialize(name, age)
-    super
-    @age = age
+animal = Animal.new
+puts animal #=> #<Animal:0x007fa78d04cce8>
+
+class Animal
+
+  def to_s
+    "animal!"
   end
+
 end
 
-mammal = Mammal.new
+animal = Animal.new
+puts animal #=> # animal!
