@@ -1,15 +1,27 @@
 class Machine
-  attr_writer :switch
-
   def start
-    self.flip_switch(:on)
+    flip_switch(:on)
   end
 
   def stop
-    self.flip_switch(:off)
+    flip_switch(:off)
   end
+
+  def status
+    switch
+  end
+
+  private
+
+  attr_accessor :switch
 
   def flip_switch(desired_state)
     self.switch = desired_state
   end
 end
+
+machine = Machine.new
+machine.start
+p machine.status
+machine.stop
+p machine.status
