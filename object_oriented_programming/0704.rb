@@ -80,7 +80,7 @@ end
 weaknesses:
 
 - full? and empty? are both inefficient. we should not have to scan the full
-  queue.
+  queue, right?
 - the logic of enqueuing and dequeuing is fairly involved. shouldn't this be
   simpler?
 
@@ -95,6 +95,8 @@ weaknesses:
 
   if we want to enqueue and the queue is full:
     dequeue, then enqueue
+
+  this allows us to simplify the logic a bit.
 =end
 
 class CircularQueue
@@ -106,7 +108,7 @@ class CircularQueue
     @least_recent_index = nil
   end
 
-  def enqueue(elem) # complicated!
+  def enqueue(elem)
     if empty?
       @queue[0] = elem
       @most_recent_index = 0
@@ -115,12 +117,8 @@ class CircularQueue
       dequeue
       enqueue(elem)
     else
-      insertion_index = (@most_recent_index + 1) % @size
-      @queue[insertion_index] = elem
-      @most_recent_index = insertion_index
-      if @least_recent_index == insertion_index
-        @least_recent_index = (@least_recent_index + 1) % @size
-      end
+      @queue[(@most_recent_index + 1) % @size] = elem
+      @most_recent_index = (@most_recent_index + 1) % @size
     end
   end
 
@@ -147,9 +145,42 @@ class CircularQueue
 end
 
 # ----------------------------------------------------------------------------
-# tests
+# instructor solution
 # ----------------------------------------------------------------------------
 
+class CircularQueue
+  def initialize(size)
+    @buffer = [nil] * size
+    @next_position = 0
+    @oldest_position = 0
+  end
+
+  def enqueue(object)
+    unless @buffer[@next_position].nil?
+      @oldest_position = increment(@next_position)
+    end
+
+    @buffer[@next_position] = object
+    @next_position = increment(@next_position)
+  end
+
+  def dequeue
+    value = @buffer[@oldest_position]
+    @buffer[@oldest_position] = nil
+    @oldest_position = increment(@oldest_position) unless value.nil?
+    value
+  end
+
+  private
+
+  def increment(position)
+    (position + 1) % @buffer.size
+  end
+end
+
+# ----------------------------------------------------------------------------
+# tests
+# ----------------------------------------------------------------------------
 
 queue = CircularQueue.new(3)
 puts queue.dequeue == nil
