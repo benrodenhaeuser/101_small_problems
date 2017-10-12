@@ -20,11 +20,8 @@ class StackMachine
   end
 
   def valid? command
-    result = false
-    if ["PUSH", "ADD", "SUB", "MULT", "DIV", "MOD", "POP", "PRINT"].include? command
-      result = true
-    end
-    result
+    operations = ["PUSH", "ADD", "SUB", "MULT", "DIV", "MOD", "POP", "PRINT"]
+    operations.include? command
   end
 
   def write_to_register n

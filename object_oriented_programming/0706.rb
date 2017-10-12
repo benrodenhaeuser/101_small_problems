@@ -10,7 +10,6 @@ class GuessingGame
 
 end
 
-
 game = GuessingGame.new
 game.play
 
