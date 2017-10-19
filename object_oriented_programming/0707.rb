@@ -1,16 +1,13 @@
 class GuessingGame
-
-  MAX_GUESSES = 7
-  RANGE = (1..100)
-
-  def initialize
-    @number_of_guesses_remaining = MAX_GUESSES
-    @target_number = RANGE.to_a.sample
+  def initialize(lower_bound, upper_bound)
+    @range = (lower_bound..upper_bound)
+    @number_of_guesses_remaining = Math.log2(@range.size).to_i + 1
+    @target_number = @range.to_a.sample
     @current_guess = nil
   end
 
   def play
-    initialize
+    initialize(@range.first, @range.last)
 
     while @number_of_guesses_remaining > 0
       puts "You have #{@number_of_guesses_remaining} remaining guess(es)."
@@ -27,9 +24,9 @@ class GuessingGame
 
   def get_guess_from_user
     loop do
-      print "Enter a number between 1 and 100: "
+      print "Enter a number between #{@range.first} and #{@range.last}: "
       @current_guess = gets.chomp.to_i
-      break if RANGE.include?(@current_guess)
+      break if @range.include?(@current_guess)
       puts "Not a valid input!"
     end
   end
@@ -40,3 +37,5 @@ class GuessingGame
   end
 
 end
+
+GuessingGame.new(1, 1000).play
