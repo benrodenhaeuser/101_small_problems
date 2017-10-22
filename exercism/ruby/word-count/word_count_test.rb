@@ -95,6 +95,3 @@ class WordCountTest < Minitest::Test
     assert_equal 1, BookKeeping::VERSION
   end
 end
-
-
-@phrase.scan(/\w+(?:'\w+)*(?:-\w+)*/).each_with_object(Hash.new(0)) { |word, counts| counts[word.downcase] += 1 }
