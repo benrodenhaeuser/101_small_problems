@@ -3,8 +3,8 @@ class Prime
   def self.nth(n)
     raise ArgumentError if n < 1
 
-    list = [2]
     current_prime = 2
+    list = [current_prime]
 
     until list[n - 1]
       next_prime = current_prime + 1

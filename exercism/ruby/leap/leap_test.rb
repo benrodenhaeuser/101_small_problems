@@ -18,17 +18,17 @@ class YearTest < Minitest::Test
   end
 
   def test_year_divisible_by_4_not_divisible_by_100_leap_year
-    skip
+    # skip
     assert Year.leap?(2016), "Expected 'true', 2016 is a leap year."
   end
 
   def test_year_divisible_by_100_not_divisible_by_400_common_year
-    skip
+    # skip
     refute Year.leap?(2100), "Expected 'false', 2100 is not a leap year."
   end
 
   def test_year_divisible_by_400_leap_year
-    skip
+    # skip
     assert Year.leap?(2000), "Expected 'true', 2000 is a leap year."
   end
 
@@ -50,7 +50,7 @@ class YearTest < Minitest::Test
   # http://ruby-doc.org/docs/ruby-doc-bundle/UsersGuide/rg/constants.html
 
   def test_bookkeeping
-    skip
+    # skip
     assert_equal 3, BookKeeping::VERSION
   end
 end
