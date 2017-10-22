@@ -1,10 +1,12 @@
 module Raindrops
+  SOUNDS = { 3 => 'Pling', 5 => 'Plang', 7 => 'Plong' }
+
   def self.convert(number)
     @@number = number
     sound = ''
-    sound << 'Pling' if factors.include?(3)
-    sound << 'Plang' if factors.include?(5)
-    sound << 'Plong' if factors.include?(7)
+    SOUNDS.each_key do |number|
+      sound << SOUNDS[number] if factors.include?(number)
+    end
     sound = @@number.to_s if sound == ''
     sound
   end
@@ -15,8 +17,6 @@ module Raindrops
     [3, 5, 7].select { |num| @@number % num == 0 }
   end
 end
-
-p Raindrops.convert(1)
 
 module BookKeeping
   VERSION = 3
