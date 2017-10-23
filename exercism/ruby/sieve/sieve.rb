@@ -8,7 +8,7 @@ class Sieve
   def primes
     primes = Set.new(2..@number)
 
-    (2..@number).each do |current_number|
+    primes.each do |current_number|
       multiples(current_number).each do |multiple|
         primes.delete(multiple)
       end
