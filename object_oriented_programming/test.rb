@@ -1,14 +1,5 @@
+arr1 = [1]
+arr2 = [2]
 
-class Example
-
-  a = 10
-
-  def initialize
-    # puts a #=> undefined
-  end
-
-  puts a
-
-end
-
-# Example.new
+p arr1.product(arr2).map { |x, y| x + y }
+p arr1.product(arr2).map { |x| x }

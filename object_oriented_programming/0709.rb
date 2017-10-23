@@ -1,33 +1,33 @@
-class Card
-  include Comparable
-
-  VALUES = {
-    'Jack' => 11,
-    'Queen' => 12,
-    'King' => 13,
-    'Ace' => 14
-  }
-
-  attr_reader :rank, :suit
-
-  def initialize(rank, suit)
-    @rank = rank
-    @suit = suit
-  end
-
-  def <=>(other_card)
-    value <=> other_card.value
-  end
-
-  def value
-    VALUES.fetch(@rank, @rank) # neat!
-  end
-
-  def to_s
-    "#{@rank} of #{@suit}"
-  end
-end
-
+# class Card
+#   # include Comparable
+#
+#   VALUES = {
+#     'Jack' => 11,
+#     'Queen' => 12,
+#     'King' => 13,
+#     'Ace' => 14
+#   }
+#
+#   attr_reader :rank, :suit
+#
+#   def initialize(rank, suit)
+#     @rank = rank
+#     @suit = suit
+#   end
+#
+#   def <=>(other_card)
+#     value <=> other_card.value
+#   end
+#
+#   def value
+#     VALUES.fetch(@rank, @rank) # neat!
+#   end
+#
+#   def to_s
+#     "#{@rank} of #{@suit}"
+#   end
+# end
+#
 class Deck
   RANKS = (2..10).to_a + %w(Jack Queen King Ace).freeze
   SUITS = %w(Hearts Clubs Diamonds Spades).freeze
@@ -47,6 +47,30 @@ class Deck
   def draw
     initialize if @cards.empty?
     @cards.pop
+  end
+end
+
+class Card
+  attr_reader :rank, :suit
+  # include Comparable
+
+  VALUES = { 'Jack' => 11, 'Queen' => 12, 'King' => 13, 'Ace' => 14 }
+
+  def initialize(rank, suit)
+    @rank = rank
+    @suit = suit
+  end
+
+  def to_s
+    "#{rank} of #{suit}"
+  end
+
+  def value
+    VALUES.fetch(@rank, @rank)
+  end
+
+  def <=>(other_card)
+    value <=> other_card.value
   end
 end
 
