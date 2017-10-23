@@ -1,30 +1,30 @@
+require 'set'
+
 class Sieve
   def initialize(number)
     @number = number
   end
 
   def primes
-    primes = (2..@number).to_a.product([true]).to_h
+    primes = Set.new(2..@number)
 
     (2..@number).each do |current_number|
-      unless primes[current_number] == false
-        multiples(current_number).each do |multiple|
-          primes[multiple] = false
-        end
+      multiples(current_number).each do |multiple|
+        primes.delete(multiple)
       end
     end
 
-    primes.keys.select { |num| primes[num] == true }
+    primes.to_a
   end
 
   def multiples(some_number)
-    multiples = []
-    current_multiple = some_number * 2
-    while current_multiple <= @number
-      multiples << current_multiple
-      current_multiple += some_number
+    (some_number + 1..@number).select do |num|
+      multiple?(num, some_number)
     end
-    multiples
+  end
+
+  def multiple?(num1, num2)
+    num1 % num2 == 0
   end
 end
 
