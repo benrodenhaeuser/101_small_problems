@@ -10,15 +10,7 @@ module RunLengthEncoding
   end
 
   def self.chunks_to_encode(string)
-    string.chars.each_with_object([]) do |char, obj|
-      if obj == []
-        obj << [char]
-      elsif obj.last.last == char
-        obj.last << char
-      else
-        obj << [char]
-      end
-    end
+    string.scan(/(([a-zA-Z\s])\2*)/).map(&:first)
   end
 
   def self.decode(string)
