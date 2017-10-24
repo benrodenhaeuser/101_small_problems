@@ -28,14 +28,12 @@ class School
   end
 
   def students_by_grade
-    list = []
-    @grades.each do |grade|
-      list << {
+    @grades.map do |grade|
+      {
         grade: grade,
         students: students(grade)
       }
-    end
-    list.sort_by { |student_group| student_group[:grade] }
+    end.sort_by { |student_group| student_group[:grade] }
   end
 
 end
