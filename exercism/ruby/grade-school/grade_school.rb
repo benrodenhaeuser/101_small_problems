@@ -11,22 +11,23 @@ end
 
 class School
   def initialize
-    @students = [] # array, or perhaps hash?
+    @students = []
     @grades = Set.new
   end
 
-  def add(name, grade) # enroll student in grade
+  def add(name, grade)
     @students << Student.new(name, grade)
-    @grades.add(grade)
+    @grades << grade
   end
 
-  def students(grade) # get list of all students in grade
+  def students(grade)
     @students
       .select { |student| student.grade == grade }
-      .map(&:name).sort
+      .map(&:name)
+      .sort
   end
 
-  def students_by_grade # all students, by grade
+  def students_by_grade
     list = []
     @grades.each do |grade|
       list << {

@@ -1,7 +1,7 @@
 module Binary
   def self.to_decimal(binary_string)
     bits = binary_string.chars
-    raise ArgumentError unless bits.all? { |bit| bit == '0' || bit == '1' }
+    raise ArgumentError unless valid?(bits)
     exponent = 0
     decimal = 0
 
@@ -11,6 +11,10 @@ module Binary
     end
 
     decimal
+  end
+
+  def self.valid?(bits)
+    bits.all? { |bit| ['0', '1'].include?(bit) }
   end
 end
 
