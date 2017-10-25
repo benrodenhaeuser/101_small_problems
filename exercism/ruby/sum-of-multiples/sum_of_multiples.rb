@@ -1,21 +1,19 @@
 class SumOfMultiples
 
-  def initialize(*numbers)
-    @numbers = numbers
+  def initialize(*factors)
+    @factors = factors
   end
 
   def to(upper_bound)
-    multiples = []
-    @numbers.each do |number|
-      multiples += multiples(number, upper_bound)
+    multiples = (0...upper_bound).select do |number|
+      multiple?(number)
     end
-    multiples.uniq.inject(&:+).to_i
+
+    multiples.inject(:+).to_i
   end
 
-  def multiples(multiplicand, upper_bound)
-    (multiplicand..upper_bound - 1).select do |number|
-      number % multiplicand == 0
-    end
+  def multiple?(number)
+    @factors.any? { |factor| number % factor == 0 }
   end
 end
 
