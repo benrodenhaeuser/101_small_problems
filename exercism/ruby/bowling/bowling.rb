@@ -1,9 +1,9 @@
-# first draft that passes all tests
+# second draft that passes all tests
 
 class Frame
   attr_accessor :rolls
 
-  def initialize(pins = false)
+  def initialize(pins = nil)
     self.rolls = []
     rolls << pins if pins
   end
@@ -18,14 +18,6 @@ class Frame
 
   def spare?
     length >= 2 && !strike? && first + second == 10
-  end
-
-  def open?
-    length == 2 && raw_score < 10
-  end
-
-  def full?
-    open? || spare?
   end
 
   def <<(pins)
@@ -46,7 +38,7 @@ class Frame
 
   def merge(other_frame)
     merged = Frame.new
-    merged.rolls = self.rolls + other_frame.rolls
+    merged.rolls = rolls + other_frame.rolls
     merged
   end
 
@@ -70,54 +62,60 @@ class Game
     if need_new_frame?
       frames << Frame.new(pins)
     else
-      frames.last << pins
+      current_frame << pins
     end
   end
 
+  def score
+    raise BowlingError unless complete?
+
+    bonus_scores = frames[0..8].map.with_index do |frame, idx|
+      if frame.strike?
+        if frames[idx + 1].strike?
+          frames[idx + 1].raw_score + frames[idx + 2].first
+        else
+          frames[idx + 1].raw_score
+        end
+      elsif frame.spare?
+        frames[idx + 1].first
+      else
+        0
+      end
+    end
+
+    bonus_scores.inject(:+) + raw_score
+  end
+
+  def to_s
+    normalized.map(&:to_s).to_s
+  end
+
+  private
+
+  def current_frame
+    frames.last
+  end
+
   def illegal_throw?(pins)
-    out_of_range?(pins) || illegal_extension?(pins) || complete?
+    out_of_range?(pins) || illegal_frame_extension?(pins) || complete?
   end
 
   def need_new_frame?
     frames.empty? ||
-    frames[-1].strike? ||
-    frames[-1].full?
+    current_frame.strike? ||
+    current_frame.length == 2
   end
 
   def out_of_range?(pins)
     !(0..10).include?(pins)
   end
 
-  def illegal_extension?(pins)
-    !need_new_frame? && frames[-1].raw_score + pins > 10
-  end
-
-  def record(rolls)
-    rolls.each { |pins| roll(pins) }
+  def illegal_frame_extension?(pins)
+    !need_new_frame? && current_frame.raw_score + pins > 10
   end
 
   def raw_score
     frames.map(&:raw_score).inject(&:+)
-  end
-
-  def score
-    raise BowlingError unless complete?
-
-    bonus_score = 0
-
-    frames[0..8].each_with_index do |frame, idx|
-      if frame.strike?
-        if frames[idx + 1].strike?
-          bonus_score += frames[idx + 1].raw_score + frames[idx + 2].first
-        else
-          bonus_score += frames[idx + 1].raw_score
-        end
-      elsif frame.spare?
-        bonus_score += frames[idx + 1].first
-      end
-    end
-
-    raw_score + bonus_score
   end
 
   def complete?
@@ -138,10 +136,6 @@ class Game
     else
       frames
     end
-  end
-
-  def to_s
-    normalized.map(&:to_s).to_s
   end
 end
 
