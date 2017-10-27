@@ -34,7 +34,7 @@ The tenth frame in the game is a special case. If someone throws a strike or a s
 
 For a tenth frame of X1/ (strike and a spare), the total value is 20.
 
-For a tenth frame of XXX (three strikes), the total value is 30.
+For a tenth frame of three strikes, the total value is 30.
 
 ## Requirements
 

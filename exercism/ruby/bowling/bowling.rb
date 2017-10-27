@@ -1,64 +1,57 @@
+# first draft that passes all tests
+
 class Frame
-  def initialize(pins = false, terminal = false)
-    @rolls = []
-    @rolls << pins if pins
-    @terminal = terminal
+  attr_accessor :rolls
+
+  def initialize(pins = false)
+    self.rolls = []
+    rolls << pins if pins
   end
 
   def raw_score
-    @rolls.inject(:+)
+    rolls.inject(:+)
+  end
+
+  def strike?
+    length >= 1 && first == 10
+  end
+
+  def spare?
+    length >= 2 && !strike? && first + second == 10
   end
 
   def open?
-    raw_score < 10
+    length == 2 && raw_score < 10
   end
 
-  def strike? # TODO: questionable
-    !open? && length == 1
-  end
-
-  def spare? # TODO: questionable
-    !open? && length == 2
+  def full?
+    open? || spare?
   end
 
   def <<(pins)
-    @rolls << pins
+    rolls << pins
   end
 
   def first
-    @rolls[0]
+    rolls[0]
   end
 
   def second
-    @rolls[1]
+    rolls[1]
   end
 
   def length
-    @rolls.length
+    rolls.length
+  end
+
+  def merge(other_frame)
+    merged = Frame.new
+    merged.rolls = self.rolls + other_frame.rolls
+    merged
   end
 
   def to_s
-    @rolls.to_s
-  end
-
-  def legal?
-    legal_and_non_terminal? || legal_and_terminal?
-  end
-
-  def legal_and_non_terminal?
-    (!@terminal && (0..10).include?(raw_score))
-  end
-
-  def legal_and_terminal?
-    @terminal && true # TODO
-  end
-
-  # def illegal_final_frame?
-  #   (@frames.last.length == 2 && @frames.last.raw_score > 10 && @frames.last.first != 10) || (@frames.last.length == 3 && (@frames.last.first != 10 && @frames.last.first + @frames.last.second != 10))
-  # end
-
-  def finished?
-    @terminal && true # TODO
+    rolls.to_s
   end
 end
 
@@ -72,62 +65,86 @@ class Game
   end
 
   def roll(pins)
-    raise BowlingError unless legal_throw?(pins)
+    raise BowlingError if illegal_throw?(pins)
 
-    if @frames.empty?
-      @frames << Frame.new(pins)
-    elsif @frames.length == 10
-      @frames.last << pins
-    elsif @frames.last.length == 2 || @frames.last.strike?
-      if @frames.length == 9
-        @frames << Frame.new(pins, true) # TODO
-      else
-        @frames << Frame.new(pins)
-      end
+    if need_new_frame?
+      frames << Frame.new(pins)
     else
-      @frames.last << pins
+      frames.last << pins
     end
-
-    raise BowlingError unless @frames.last.legal?
   end
 
-  def legal_throw?(pins)
-    (0..10).include?(pins)
+  def illegal_throw?(pins)
+    out_of_range?(pins) || illegal_extension?(pins) || complete?
+  end
+
+  def need_new_frame?
+    frames.empty? ||
+    frames[-1].strike? ||
+    frames[-1].full?
+  end
+
+  def out_of_range?(pins)
+    !(0..10).include?(pins)
+  end
+
+  def illegal_extension?(pins)
+    !need_new_frame? && frames[-1].raw_score + pins > 10
   end
 
   def record(rolls)
     rolls.each { |pins| roll(pins) }
   end
 
-  def to_s
-    @frames.to_s
-  end
-
   def raw_score
-    @frames.map(&:raw_score).inject(&:+)
+    frames.map(&:raw_score).inject(&:+)
   end
 
   def score
-    raise BowlingError unless @frames.last.finished?
+    raise BowlingError unless complete?
 
     bonus_score = 0
 
-    @frames[0..8].each_with_index do |frame, idx|
+    frames[0..8].each_with_index do |frame, idx|
       if frame.strike?
-        if @frames[idx + 1].strike? || idx < 8
-          bonus_score += @frames[idx + 1].raw_score + @frames[idx + 2].first
+        if frames[idx + 1].strike?
+          bonus_score += frames[idx + 1].raw_score + frames[idx + 2].first
         else
-          bonus_score += @frames[idx + 1].first + @frames[idx + 1].second
+          bonus_score += frames[idx + 1].raw_score
         end
       elsif frame.spare?
-        bonus_score += @frames[idx + 1].first
+        bonus_score += frames[idx + 1].first
       end
     end
 
     raw_score + bonus_score
   end
 
-  def to_s
-    @frames.map(&:to_s).join('  ')
+  def complete?
+    return false if normalized.length < 10
+    terminal_frame_complete?
   end
+
+  def terminal_frame_complete?
+    terminal = normalized.last
+    terminal.strike? && terminal.length == 3 ||
+    terminal.spare? && terminal.length == 3 ||
+    terminal.length == 2 && !terminal.spare? && !terminal.strike?
+  end
+
+  def normalized
+    if frames.length > 10
+      frames.dup[0..8] + [frames.dup[9..-1].reduce(&:merge)]
+    else
+      frames
+    end
+  end
+
+  def to_s
+    normalized.map(&:to_s).to_s
+  end
+end
+
+module BookKeeping
+  VERSION = 3
 end
