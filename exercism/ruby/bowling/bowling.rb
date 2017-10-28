@@ -5,98 +5,105 @@ end
 class Game
   class BowlingError < ArgumentError; end
 
-  attr_reader :frames
+  attr_reader :round
 
   def initialize
-    @frames = Frames.new
+    @round = Round.new
   end
 
   def roll(pins)
-    raise BowlingError if frames.illegal_throw?(pins)
+    raise BowlingError unless round.legal_roll?(pins)
 
-    frames.add_empty_frame if frames.need_new_frame?
-    frames.current_frame << pins
+    round.add_frame if round.need_new_frame?
+    round.current_frame << pins
   end
 
   def score
-    raise BowlingError unless frames.terminal?
+    raise BowlingError unless round.complete?
 
-    bonus_scores = frames[0..8].map.with_index do |frame, idx|
-      if frame.strike?
-        if frames[idx + 1].strike?
-          frames[idx + 1].raw_score + frames[idx + 2].first
-        else
-          frames[idx + 1].raw_score
-        end
-      elsif frame.spare?
-        frames[idx + 1].first
-      else
-        0
-      end
-    end
-
-    bonus_scores.inject(:+) + frames.raw_score
+    round.score
   end
 end
 
-class Frames
+class Round
+  PINS_RANGE = (0..10)
+  NON_TERMINAL_RANGE = (0..8)
+
   attr_reader :frames
 
   def initialize
-    @frames = []
-  end
-
-  def to_s
-    normalized.map(&:to_s).to_s
+    @frames = [RegularFrame.new]
   end
 
   def current_frame
     frames.last
   end
 
-  def illegal_throw?(pins)
-    out_of_range?(pins) || illegal_frame_extension?(pins) || terminal?
+  def complete?
+    have_ten_frames? && current_frame.complete?
+  end
+
+  def add_frame
+    new_frame =
+      (have_nine_frames? ? TerminalFrame : RegularFrame).new
+
+    frames << new_frame
+  end
+
+  def legal_roll?(pins)
+    in_range?(pins) && current_frame.legal?(pins)
+  end
+
+  def in_range?(pins)
+    PINS_RANGE.include?(pins)
+  end
+
+  def have_nine_frames?
+    frames.count == 9
+  end
+
+  def have_ten_frames?
+    frames.count == 10
   end
 
   def need_new_frame?
-    frames.empty? ||
-    current_frame.strike? ||
-    current_frame.length == 2
+    return false if have_ten_frames?
+    current_frame.complete?
   end
 
-  def add_empty_frame
-    frames << Frame.new
-  end
-
-  def out_of_range?(pins)
-    !(0..10).include?(pins)
-  end
-
-  def illegal_frame_extension?(pins)
-    !need_new_frame? && (current_frame.raw_score + pins) > 10
+  def score
+    raw_score + bonus_score
   end
 
   def raw_score
     frames.map(&:raw_score).inject(&:+)
   end
 
-  def terminal?
-    return false if normalized.length < 10
-    terminal_frame_complete?
+  def bonus_score
+    NON_TERMINAL_RANGE.inject(0) do |sum, idx|
+      sum + bonus(idx)
+    end
   end
 
-  def terminal_frame_complete?
-    terminal = normalized.last
-    terminal.strike? && terminal.length == 3 ||
-    terminal.spare? && terminal.length == 3 ||
-    terminal.length == 2 && !terminal.spare? && !terminal.strike?
-  end
-
-  def normalized
-    if frames.length > 10
-      frames[0..8] + [frames[9..-1].reduce(&:merge)]
+  def bonus(idx)
+    if frames[idx].strike?
+      two_roll_bonus(idx)
+    elsif frames[idx].spare?
+      one_roll_bonus(idx)
     else
-      frames
+      0
+    end
+  end
+
+  def one_roll_bonus(idx)
+    frames[idx + 1].first_roll
+  end
+
+  def two_roll_bonus(idx)
+    if frames[idx + 1].number_of_rolls >= 2
+      frames[idx + 1].first_roll + frames[idx + 1].second_roll
+    else
+      frames[idx + 1].first_roll + frames[idx + 2].first_roll
     end
   end
 
@@ -106,6 +113,10 @@ class Frames
 
   def [](index)
     frames[index]
+  end
+
+  def to_s
+    frames.map(&:to_s).to_s
   end
 end
 
@@ -118,40 +129,81 @@ class Frame
   end
 
   def raw_score
-    rolls.inject(:+)
+    rolls.inject(0, :+)
   end
 
   def strike?
-    length >= 1 && first == 10
+    number_of_rolls >= 1 &&
+    first_roll == 10
+  end
+
+  def double_strike?
+    number_of_rolls >= 2 &&
+    first_roll == 10 &&
+    second_roll == 10
   end
 
   def spare?
-    length >= 2 && !strike? && first + second == 10
+    number_of_rolls >= 2 &&
+    !strike? &&
+    first_roll + second_roll == 10
   end
 
   def <<(pins)
     rolls << pins
   end
 
-  def first
+  def first_roll
     rolls[0]
   end
 
-  def second
+  def second_roll
     rolls[1]
   end
 
-  def length
-    rolls.length
-  end
-
-  def merge(other_frame)
-    merged = Frame.new
-    merged.rolls = rolls + other_frame.rolls
-    merged
+  def number_of_rolls
+    rolls.count
   end
 
   def to_s
     rolls.to_s
+  end
+end
+
+class RegularFrame < Frame
+  def complete?
+    case strike?
+    when true then number_of_rolls == 1
+    when false then number_of_rolls == 2
+    end
+  end
+
+  def legal?(pins)
+    return true if complete?
+    raw_score + pins <= 10
+  end
+end
+
+class TerminalFrame < Frame
+  def complete?
+    case strike? || spare?
+    when true then number_of_rolls == 3
+    when false then number_of_rolls == 2
+    end
+  end
+
+  def legal?(pins)
+    return false if complete?
+
+    case number_of_rolls
+    when 1
+      strike? ||
+      !strike? && first_roll + pins <= 10
+    when 2
+      spare? || double_strike? ||
+        (strike? &&
+          !double_strike? &&
+          second_roll + pins <= 10)
+    end
   end
 end
