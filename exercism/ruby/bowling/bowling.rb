@@ -26,7 +26,6 @@ class Game
 end
 
 class Round
-  PINS_RANGE = (0..10)
   NON_TERMINAL_RANGE = (0..8)
 
   attr_reader :frames
@@ -51,11 +50,7 @@ class Round
   end
 
   def legal_roll?(pins)
-    in_range?(pins) && current_frame.legal?(pins)
-  end
-
-  def in_range?(pins)
-    PINS_RANGE.include?(pins)
+    Frame::PINS_RANGE.include?(pins) && current_frame.legal?(pins)
   end
 
   def have_nine_frames?
@@ -121,6 +116,8 @@ class Round
 end
 
 class Frame
+  PINS_RANGE = (0..10)
+
   attr_accessor :rolls
 
   def initialize(pins = nil)
@@ -180,7 +177,8 @@ class RegularFrame < Frame
 
   def legal?(pins)
     return true if complete?
-    raw_score + pins <= 10
+
+    PINS_RANGE.include?(raw_score + pins)
   end
 end
 
@@ -198,12 +196,12 @@ class TerminalFrame < Frame
     case number_of_rolls
     when 1
       strike? ||
-      !strike? && first_roll + pins <= 10
+      !strike? && PINS_RANGE.include?(first_roll + pins)
     when 2
       spare? || double_strike? ||
         (strike? &&
           !double_strike? &&
-          second_roll + pins <= 10)
+          PINS_RANGE.include?(second_roll + pins))
     end
   end
 end
