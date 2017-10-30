@@ -3,6 +3,10 @@ class Game
     @current_frame = 0
   end
 
+  def record(throws)
+    throws.each { |pins| roll(pins) }
+  end
+
   def roll(pins)
     raise BowlingError unless frames[9].extendable?
     raise BowlingError if pins < 0
@@ -19,10 +23,9 @@ class Game
     frames[0..9].map(&:score).inject(0, :+)
   end
 
-  private
-
   def frames
     @frames ||= Array.new(11) { Frame.new }
+    # p @frames
   end
 
   class Frame
@@ -31,6 +34,7 @@ class Game
       check_valid_frame
     end
 
+    # a strike is extendable
     def extendable?
       rolls.length < 2 || (rolls[0] == 10 && rolls.length < 3) || (rolls[0] + rolls[1] == 10 && rolls.length < 3)
     end
@@ -60,3 +64,11 @@ end
 module BookKeeping
   VERSION = 3
 end
+
+
+game = Game.new
+p game.frames
+game.record([10, 10, 10, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+p game.frames
+p game.frames[0..9].map(&:score)
+p game.score

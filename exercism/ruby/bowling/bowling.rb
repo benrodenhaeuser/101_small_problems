@@ -11,10 +11,6 @@ class Game
     @round = Round.new
   end
 
-  def record(throws)
-    throws.each { |pins| roll(pins) }
-  end
-
   def roll(pins)
     raise BowlingError unless round.legal_roll?(pins)
     round.roll(pins)
@@ -35,11 +31,18 @@ class Round
 
   def roll(pins)
     current_frame << pins
+    previous_frames.select(&:add_bonus?).each do |frame|
+      frame.bonus << pins
+    end
     add_frame if need_new_frame?
   end
 
   def current_frame
     frames.last
+  end
+
+  def previous_frames
+    frames[0...-1]
   end
 
   def legal_roll?(pins)
@@ -75,44 +78,23 @@ class Round
   end
 
   def raw_score
-    frames.map(&:raw_score).inject(&:+)
+    frames.map(&:raw_score).inject(:+)
   end
 
   def bonus_score
-    (0..8).inject(0) { |sum, idx| sum + bonus(idx) }
-  end
-
-  def bonus(idx)
-    if frames[idx].spare?
-      one_roll_bonus(idx)
-    elsif frames[idx].strike?
-      two_roll_bonus(idx)
-    else
-      0
-    end
-  end
-
-  def one_roll_bonus(idx)
-    frames[idx + 1].first_roll
-  end
-
-  def two_roll_bonus(idx)
-    case frames[idx + 1].number_of_rolls
-    when 1
-      frames[idx + 1].first_roll + frames[idx + 2].first_roll
-    when (2..3)
-      frames[idx + 1].first_roll + frames[idx + 1].second_roll
-    end
+    frames.map(&:bonus_score).inject(:+)
   end
 end
 
 class Frame
   PINS_RANGE = (0..10)
 
-  attr_accessor :rolls
+  attr_accessor :rolls, :bonus
 
   def initialize(pins = nil)
-    self.rolls = []
+    @rolls = []
+    @bonus = []
+
     rolls << pins if pins
   end
 
@@ -122,6 +104,10 @@ class Frame
 
   def raw_score
     rolls.inject(0, :+)
+  end
+
+  def bonus_score
+    bonus.inject(0, :+)
   end
 
   def strike?
@@ -146,7 +132,7 @@ class Frame
   end
 
   def no_rolls_so_far?
-    number_of_rolls == 0
+    number_of_rolls.zero?
   end
 
   def first_roll
@@ -171,15 +157,20 @@ class RegularFrame < Frame
     return false unless within_pin_range?(pins)
     within_pin_range?(raw_score + pins)
   end
+
+  def add_bonus?
+    strike? && @bonus.count < 2 ||
+      spare? && @bonus.count < 1
+  end
 end
 
 class FinalFrame < Frame
   def done?
-    case strike? || spare?
-    when true then number_of_rolls == 3
-    when false then number_of_rolls == 2
-    end
-  end
+   case strike? || spare?
+   when true then number_of_rolls == 3
+   when false then number_of_rolls == 2
+   end
+ end
 
   def legal_roll?(pins)
     return false unless !done? && within_pin_range?(pins)
