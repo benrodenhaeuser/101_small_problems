@@ -111,46 +111,30 @@ class Frame
   end
 
   def strike?
-    number_of_rolls >= 1 &&
-      first_roll == 10
+    rolls.count >= 1 &&
+      rolls[0] == 10
   end
 
   def double_strike?
-    number_of_rolls >= 2 &&
-      first_roll == 10 &&
-      second_roll == 10
+    rolls.count >= 2 &&
+      rolls[0] == 10 &&
+      rolls[1] == 10
   end
 
   def spare?
-    number_of_rolls >= 2 &&
+    rolls.count >= 2 &&
       !strike? &&
-      first_roll + second_roll == 10
+      rolls[0] + rolls[1] == 10
   end
 
   def <<(pins)
     rolls << pins
   end
-
-  def no_rolls_so_far?
-    number_of_rolls.zero?
-  end
-
-  def first_roll
-    rolls[0]
-  end
-
-  def second_roll
-    rolls[1]
-  end
-
-  def number_of_rolls
-    rolls.count
-  end
 end
 
 class RegularFrame < Frame
   def done?
-    strike? || number_of_rolls == 2
+    strike? || rolls.count == 2
   end
 
   def legal_roll?(pins)
@@ -167,21 +151,21 @@ end
 class FinalFrame < Frame
   def done?
    case strike? || spare?
-   when true then number_of_rolls == 3
-   when false then number_of_rolls == 2
+   when true then rolls.count == 3
+   when false then rolls.count == 2
    end
  end
 
   def legal_roll?(pins)
     return false unless !done? && within_pin_range?(pins)
-    return true if no_rolls_so_far?
+    return true if rolls.count.zero?
 
-    case number_of_rolls
+    case rolls.count
     when 1
-      strike? || within_pin_range?(first_roll + pins)
+      strike? || within_pin_range?(rolls[0] + pins)
     when 2
       spare? || double_strike? ||
-        within_pin_range?(second_roll + pins)
+        within_pin_range?(rolls[1] + pins)
     end
   end
 end

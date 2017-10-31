@@ -1,14 +1,10 @@
 module ETL
-  SCRABBLE_SCORE_RANGE = (1..10)
-
-  def self.transform(hash)
-    scores = {}
-    SCRABBLE_SCORE_RANGE.each do |score|
-      hash[score].to_a.each do |char|
-        scores[char.downcase] = score
+  def self.transform(num_to_chars)
+    num_to_chars.each_with_object({}) do |(num, chars), char_to_num|
+      chars.each do |char|
+        char_to_num[char.downcase] = num
       end
     end
-    scores
   end
 end
 
