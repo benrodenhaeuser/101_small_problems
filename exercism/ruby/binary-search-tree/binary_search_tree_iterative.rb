@@ -7,22 +7,23 @@ class Bst
 
   attr_reader :size
 
-  def initialize(data = nil)
+  def initialize(data)
     @root = Node.new(data)
   end
 
-  def insert(node = @root, data)
-    return node.data = data unless node.data
-
-    if node.data >= data
-      node = node.left ||= Node.new
-    else
-      node = node.right ||= Node.new
+  def insert(data)
+    node = @root
+    while node.data
+      if node.data >= data
+        node = node.left ||= Node.new
+      else
+        node = node.right ||= Node.new
+      end
     end
-
-    insert(node, data)
+    node.data = data
   end
 
+  # TODO: iterative solution?
   def search(node = @root, data)
     return nil if node.nil?
     return data if node.data == data
@@ -36,6 +37,7 @@ class Bst
     search(node, data)
   end
 
+  # TODO: iterative solution?
   def each(node = @root, &block)
     return to_enum(:each) unless block_given?
 

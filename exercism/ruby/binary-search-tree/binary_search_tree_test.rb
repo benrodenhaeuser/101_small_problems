@@ -3,7 +3,8 @@ require_relative 'binary_search_tree'
 
 class BstTest < Minitest::Test
   def test_data_is_retained
-    assert_equal 4, Bst.new(4).data
+    four = Bst.new(4)
+    assert_equal 4, four.data
   end
 
   def test_inserting_less
@@ -97,6 +98,44 @@ class BstTest < Minitest::Test
     (1..7).each { |x| assert_equal(x, each_enumerator.next) }
 
     assert_raises(StopIteration) { each_enumerator.next }
+  end
+
+  # tests for search
+
+  def test_it_finds_value_in_single_element_tree
+    # skip
+    four = Bst.new(4)
+    assert_equal 4, four.search(4)
+  end
+
+  def test_it_returns_false_if_value_is_not_in_single_element_tree
+    # skip
+    four = Bst.new(4)
+    assert_nil four.search(5)
+  end
+
+  def test_it_finds_value_in_more_complex_tree
+    # skip
+    four = Bst.new 4
+    four.insert 2
+    four.insert 1
+    four.insert 3
+    four.insert 6
+    four.insert 7
+    four.insert 5
+    assert_equal 7, four.search(7)
+  end
+
+  def test_it_returns_false_if_element_is_not_in_more_complex_tree
+    # skip
+    four = Bst.new 4
+    four.insert 2
+    four.insert 1
+    four.insert 3
+    four.insert 6
+    four.insert 7
+    four.insert 5
+    assert_nil four.search(17)
   end
 
   # Problems in exercism evolve over time, as we find better ways to ask
