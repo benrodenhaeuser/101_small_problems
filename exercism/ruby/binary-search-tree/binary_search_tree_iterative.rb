@@ -5,8 +5,6 @@ end
 class Bst
   include Enumerable
 
-  attr_reader :size
-
   def initialize(data)
     @root = Node.new(data)
   end
@@ -27,23 +25,19 @@ class Bst
     node.data = data
   end
 
-  # recursive
-  def search(node = @root, data)
-    return nil if node.nil?
-    return data if node.data == data
-
-    if node.data >= data
-      node = node.left
-    else
-      node = node.right
-    end
-
-    search(node, data)
-  end
-
-  # iterative
   def search(data)
+    node = @root
 
+    loop do
+      break nil if node.nil?
+      break data if node.data == data
+
+      if node.data >= data
+        node = node.left
+      else
+        node = node.right
+      end
+    end
   end
 
   def each
