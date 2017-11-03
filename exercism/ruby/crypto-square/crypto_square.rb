@@ -10,27 +10,27 @@ class Crypto
   def ciphertext
     return @plaintext if @plaintext.empty?
 
-    matrix
+    plaintext_matrix
       .transpose
-      .map { |row| row.join }
+      .map(&:join)
       .join(' ')
   end
 
   private
 
-  def matrix
-    plain_with_blanks = @plaintext + (' ' * blanks)
+  def plaintext_matrix
+    plaintext_with_blanks = @plaintext + (' ' * blanks)
 
-    plain_with_blanks
+    plaintext_with_blanks
       .chars
       .each_slice(cols)
-      .with_object([]) do |slice, matrix|
-        matrix << slice
+      .with_object([]) do |slice, plaintext_matrix|
+        plaintext_matrix << slice
       end
   end
 
   def cols
-    Math.sqrt(@plaintext.length).ceil.to_i
+    Math.sqrt(@plaintext.length).ceil
   end
 
   def blanks
