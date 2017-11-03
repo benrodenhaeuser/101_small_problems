@@ -5,8 +5,6 @@ end
 class Bst
   include Enumerable
 
-  attr_reader :size
-
   def initialize(data = nil)
     @root = Node.new(data)
   end

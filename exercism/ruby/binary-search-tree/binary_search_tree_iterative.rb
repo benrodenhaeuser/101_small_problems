@@ -13,17 +13,21 @@ class Bst
 
   def insert(data)
     node = @root
-    while node.data
+
+    loop do
+      break unless node.data
+
       if node.data >= data
         node = node.left ||= Node.new
       else
         node = node.right ||= Node.new
       end
     end
+
     node.data = data
   end
 
-  # TODO: iterative solution?
+  # recursive
   def search(node = @root, data)
     return nil if node.nil?
     return data if node.data == data
@@ -37,13 +41,30 @@ class Bst
     search(node, data)
   end
 
-  # TODO: iterative solution?
-  def each(node = @root, &block)
-    return to_enum(:each) unless block_given?
+  # iterative
+  def search(data)
 
-    each(node.left, &block) if node.left
-    yield(node.data)
-    each(node.right, &block) if node.right
+  end
+
+  def each
+    return to_enum(&:each) unless block_given?
+
+    stack = []
+    node = @root
+
+    loop do
+      if node
+        stack.push(node)
+        node = node.left
+      else
+        break if stack.empty?
+        node = stack.pop
+        yield node.data
+        node = node.right
+      end
+    end
+
+    self
   end
 
   def data

@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative 'binary_search_tree'
+require_relative 'binary_search_tree_iterative'
 
 class BstTest < Minitest::Test
   def test_data_is_retained
@@ -109,13 +109,13 @@ class BstTest < Minitest::Test
   end
 
   def test_it_returns_false_if_value_is_not_in_single_element_tree
-    # skip
+    skip
     four = Bst.new(4)
     assert_nil four.search(5)
   end
 
   def test_it_finds_value_in_more_complex_tree
-    # skip
+    skip
     four = Bst.new 4
     four.insert 2
     four.insert 1
@@ -127,7 +127,7 @@ class BstTest < Minitest::Test
   end
 
   def test_it_returns_false_if_element_is_not_in_more_complex_tree
-    # skip
+    skip
     four = Bst.new 4
     four.insert 2
     four.insert 1
