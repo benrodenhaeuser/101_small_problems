@@ -9,17 +9,14 @@ class Alphametics
 
   def initialize(input)
     @input = input
-    words = @input.split(/ \+ | == /)
-    @word_initial_chars = words.map { |word| word[0] }.uniq
-    remaining_chars = words.flat_map { |word| word[1..-1].chars }
-    @chars = (@word_initial_chars + remaining_chars).uniq
+    @chars = (leading_chars + non_leading_chars).uniq
   end
 
   def solve
     target_digits =
       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         .permutation(@chars.count)
-        .select { |digits| no_word_initial_zeros?(digits) }
+        .select { |digits| no_leading_zeroes?(digits) }
         .find { |digits| solution?(digits) }
 
     target_digits ? mapping(target_digits) : nil
@@ -27,12 +24,28 @@ class Alphametics
 
   private
 
-  def mapping(digits)
-    @chars.zip(digits).to_h
+  def leading_chars
+    words.map { |word| word[0] }.uniq
+  end
+
+  def non_leading_chars
+    words.flat_map { |word| word[1..-1].chars }.uniq
+  end
+
+  def words
+    @input.split(/ \+ | == /)
+  end
+
+  def no_leading_zeroes?(digits)
+    !digits[0...leading_chars.count].include?(0)
   end
 
   def solution?(digits)
     eval(substitute(digits))
+  end
+
+  def mapping(digits)
+    @chars.zip(digits).to_h
   end
 
   def substitute(digits)
@@ -43,9 +56,5 @@ class Alphametics
     end
 
     output
-  end
-
-  def no_word_initial_zeros?(digits)
-    !digits[0...@word_initial_chars.count].include?(0)
   end
 end
