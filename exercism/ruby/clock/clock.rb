@@ -11,26 +11,17 @@ class Clock
   end
 
   def initialize(hours, minutes)
-    normalize(hours, minutes)
-  end
-
-  def normalize(hours, minutes)
     @minutes = minutes % MINUTES_PER_HOUR
     additional_hours = minutes / MINUTES_PER_HOUR
     @hours = (hours + additional_hours) % HOURS_PER_DAY
   end
 
   def to_s
-    [format(@hours),format(@minutes)].join(':')
-  end
-
-  def format(number)
-    '%02d' % number
+    format(@hours) + ':' + format(@minutes)
   end
 
   def +(minutes)
-    normalize(@hours, @minutes + minutes)
-    self
+    self.class.new(@hours, @minutes + minutes)
   end
 
   def ==(other_clock)
@@ -40,4 +31,10 @@ class Clock
   protected
 
   attr_reader :hours, :minutes
+
+  private
+
+  def format(number)
+    '%02d' % number
+  end
 end
