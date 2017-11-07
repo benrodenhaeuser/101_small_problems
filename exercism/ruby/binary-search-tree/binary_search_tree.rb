@@ -1,3 +1,5 @@
+# recursive implementations of insert, search, each
+
 module BookKeeping
   VERSION = 1
 end
@@ -41,6 +43,8 @@ class Bst
     yield(node.data)
     each(node.right, &block) if node.right
   end
+
+  # the following three methods are needed to pass the tests:
 
   def data
     @root.data

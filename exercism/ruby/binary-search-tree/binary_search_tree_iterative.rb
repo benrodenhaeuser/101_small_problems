@@ -1,3 +1,5 @@
+# iterative implementations of insert, search, each
+
 module BookKeeping
   VERSION = 1
 end
