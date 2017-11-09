@@ -1,95 +1,83 @@
 class RailFenceCipher
   VERSION = 1
 
-  def self.encode(string, rails)
-    new(string, rails).encode
+  def self.encode(text, rails)
+    new(text, rails).encode
   end
 
-  def self.decode(string, rails)
-    new(string, rails).decode
+  def self.decode(text, rails)
+    new(text, rails).decode
   end
 
-  def initialize(string, rails)
-    @string = string
-    @rails = rails
-    @current_rail = 0
-    @direction = :down
+  def initialize(text, rails)
+    @text = text
+    @matrix = RailFenceMatrix.new(rails, @text.length)
   end
 
   def encode
-    encode_matrix.map(&:join).join
+    record_text(:by_col)
+    retrieve_text(:by_row)
   end
 
   def decode
-    matrix = decode_matrix
-    plaintext = ''
-    @current_rail = 0
-
-    (0...@string.length).each do |col|
-      plaintext[col] = matrix[@current_rail][col]
-      @current_rail = next_rail
-    end
-
-    plaintext
+    record_text(:by_row)
+    retrieve_text(:by_col)
   end
 
   private
 
-  def encode_matrix
-    (0...@string.length).each_with_object(empty_matrix) do |col, matrix|
-      matrix[@current_rail][col] = @string[col]
-      @current_rail = next_rail
+  def record_text(by_axis)
+    slots_on_path(by_axis).each_with_index do |slot, index|
+      slot << @text[index]
     end
   end
 
-  def decode_matrix
-    matrix =
-      (0...@string.length).each_with_object(empty_matrix) do |col, matrix|
-        matrix[@current_rail][col] = true
-        @current_rail = next_rail
-      end
+  def retrieve_text(by_axis)
+    slots_on_path(by_axis).join
+  end
 
-    string = @string
+  def slots_on_path(by_axis)
+    @matrix.send(by_axis).flat_map do |slots|
+      slots.select { |slot| slot }
+    end
+  end
 
-    matrix.each_with_index do |row, row_idx|
-      row.each_index do |col|
-        if matrix[row_idx][col] == true
-          matrix[row_idx][col] = string[0]
-          string = string[1..-1]
+  class RailFenceMatrix
+    attr_reader :by_row, :by_col
+
+    def initialize(rows, cols)
+      @rows = rows
+      @cols = cols
+      @cycle = (@rows * 2) - 2
+
+      @by_row = zig_zag_matrix
+      @by_col = @by_row.transpose
+    end
+
+    def zig_zag_matrix
+      matrix = empty_matrix
+
+      (0...@rows).each do |row|
+        (0...@cols).each do |col|
+          matrix[row][col] = '' if on_path?(row, col)
         end
       end
+
+      matrix
     end
 
-    matrix
-  end
+    private
 
-  def empty_matrix
-    matrix = []
-    (0...@rails).each do |row|
-      row = [nil] * @string.length
-      matrix << row
+    def empty_matrix
+      (0...@rows).map { |row| [nil] * @cols }
     end
-    matrix
+
+    def on_path?(row, col)
+      @rows == 1 ||
+        (row - col) % @cycle == 0 ||
+        (row + col) % @cycle == 0
+    end
   end
 
-  def next_rail
-    return @current_rail if @rails == 0
-    change_direction if change_direction?
-    @direction == :down ? @current_rail += 1 : @current_rail -= 1
-  end
-
-  def change_direction
-    @direction == :down ? @direction = :up : @direction = :down
-  end
-
-  def change_direction?
-    !(0...@rails).include?(next_rail_in_direction)
-  end
-
-  def next_rail_in_direction
-    @direction == :down ? @current_rail + 1 : @current_rail - 1
-  end
-
+  private_constant :RailFenceMatrix
 end
-
-p RailFenceCipher.decode('ESXIEECSR', 4)
