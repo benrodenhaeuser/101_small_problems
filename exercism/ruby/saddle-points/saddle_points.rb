@@ -3,22 +3,34 @@ class Matrix
 
   def initialize(input)
     @rows = parse(input)
-    @columns = @rows.transpose
+    @columns = transpose
   end
 
   def saddle_points
-    cells.select { |row_idx, col_idx| saddle_point?(row_idx, col_idx) }
+    cells.select do |row_idx, col_idx|
+      saddle_point?(row_idx, col_idx)
+    end
   end
 
   private
 
+  def transpose
+    number_of_rows = @rows[0].count
+    (0...number_of_rows).each_with_object([]) do |col_idx, cols|
+      cols << @rows.map { |row| row[col_idx] }
+    end
+  end
+
   def saddle_point?(row_idx, col_idx)
-    rows[row_idx].max == rows[row_idx][col_idx] &&
-      columns[col_idx].min == rows[row_idx][col_idx]
+    value = rows[row_idx][col_idx]
+    row, column = rows[row_idx], columns[col_idx]
+    row.max == value && column.min == value
   end
 
   def parse(input)
-    input.split("\n").map { |row| row.split(' ').map(&:to_i) }
+    input.split("\n").map do |row|
+      row.split(' ').map(&:to_i)
+    end
   end
 
   def cells
