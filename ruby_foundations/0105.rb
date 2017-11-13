@@ -1,19 +1,26 @@
-class ROT13
-  def self.convert(text)
+# introducing an extra class for the chars does not make much sense, but it
+# was fun anyway
+
+class ROT
+  def self.convert(text, rot = 13)
+    @@rot = rot
     new(text).convert
   end
 
   def self.create(char)
+    raise ArgumentError unless char.instance_of?(String)
+
     case char
-    when ('A'..'Z') then UpperChar.new(char)
-    when ('a'..'z') then LowerChar.new(char)
+    when ('A'..'Z') then UpperChar.new(char, @@rot)
+    when ('a'..'z') then LowerChar.new(char, @@rot)
     else
-      NonLetterChar.new(char)
+      NonLetterChar.new(char, @@rot)
     end
   end
 
   def initialize(text)
     @text = text
+    @convertable_chars = convertable_chars
   end
 
   def convertable_chars
@@ -21,7 +28,7 @@ class ROT13
   end
 
   def convert
-    convertable_chars.map do |convertable_char|
+    @convertable_chars.map do |convertable_char|
       convertable_char.convert
     end.map(&:to_s).join
   end
@@ -29,10 +36,11 @@ end
 
 class ConvertableChar
   ALPHABET = ('a'..'z').to_a
-  ROT = 13
+  ALPHABET_UPPER = ('A'..'Z').to_a
 
-  def initialize(char)
+  def initialize(char, rot)
     @char = char
+    @rot = rot
   end
 
   def to_s
@@ -40,50 +48,48 @@ class ConvertableChar
   end
 end
 
-class NonLetterChar < ConvertableChar
-  def convert
-    NonLetterChar.new(@char)
-  end
-end
-
-# TODO: the ALPHABET constant does not play a role, except for its lenght
-
 class UpperChar < ConvertableChar
-  UPPER_TO_NUMBER = ('A'..'Z').zip(0...ALPHABET.length).to_h
+  UPPER_TO_NUMBER = ALPHABET_UPPER.zip(0...ALPHABET.length).to_h
   NUMBER_TO_UPPER = UPPER_TO_NUMBER.invert
 
   def convert
-    char = NUMBER_TO_UPPER[(UPPER_TO_NUMBER[@char] + ROT) % ALPHABET.length]
-    UpperChar.new(char)
+    char = NUMBER_TO_UPPER[(UPPER_TO_NUMBER[@char] + @rot) % ALPHABET.length]
+    UpperChar.new(char, @rot)
   end
 end
 
 class LowerChar < ConvertableChar
-  LOWER_TO_NUMBER = ('a'..'z').zip(0...ALPHABET.length).to_h
+  LOWER_TO_NUMBER = ALPHABET.zip(0...ALPHABET.length).to_h
   NUMBER_TO_LOWER = LOWER_TO_NUMBER.invert
 
   def convert
-    char = NUMBER_TO_LOWER[(LOWER_TO_NUMBER[@char] + ROT) % ALPHABET.length]
-    LowerChar.new(char)
+    char = NUMBER_TO_LOWER[(LOWER_TO_NUMBER[@char] + @rot) % ALPHABET.length]
+    LowerChar.new(char, @rot)
   end
 end
 
-p ROT13.convert('Nqn Ybirynpr')
-p ROT13.convert('Tenpr Ubccre')
-p ROT13.convert('Nqryr Tbyqfgvar')
-p ROT13.convert('Nyna Ghevat')
-p ROT13.convert('Puneyrf Onoontr')
-p ROT13.convert('Noqhyynu Zhunzznq ova Zhfn ny-Xujnevmzv')
-p ROT13.convert('Wbua Ngnanfbss')
-p ROT13.convert('Ybvf Unvog')
-p ROT13.convert('Pynhqr Funaaba')
-p ROT13.convert('Fgrir Wbof')
-p ROT13.convert('Ovyy Tngrf')
-p ROT13.convert('Gvz Orearef-Yrr')
-p ROT13.convert('Fgrir Jbmavnx')
-p ROT13.convert('Xbaenq Mhfr')
-p ROT13.convert('Fve Nagbal Ubner')
-p ROT13.convert('Zneiva Zvafxl')
-p ROT13.convert('Lhxvuveb Zngfhzbgb')
-p ROT13.convert('Unllvz Fybavzfxv')
-p ROT13.convert('Tregehqr Oynapu')
+class NonLetterChar < ConvertableChar
+  def convert
+    NonLetterChar.new(@char, @rot)
+  end
+end
+
+p ROT.convert('Nqn Ybirynpr')
+p ROT.convert('Tenpr Ubccre')
+p ROT.convert('Nqryr Tbyqfgvar')
+p ROT.convert('Nyna Ghevat')
+p ROT.convert('Puneyrf Onoontr')
+p ROT.convert('Noqhyynu Zhunzznq ova Zhfn ny-Xujnevmzv')
+p ROT.convert('Wbua Ngnanfbss')
+p ROT.convert('Ybvf Unvog')
+p ROT.convert('Pynhqr Funaaba')
+p ROT.convert('Fgrir Wbof')
+p ROT.convert('Ovyy Tngrf')
+p ROT.convert('Gvz Orearef-Yrr')
+p ROT.convert('Fgrir Jbmavnx')
+p ROT.convert('Xbaenq Mhfr')
+p ROT.convert('Fve Nagbal Ubner')
+p ROT.convert('Zneiva Zvafxl')
+p ROT.convert('Lhxvuveb Zngfhzbgb')
+p ROT.convert('Unllvz Fybavzfxv')
+p ROT.convert('Tregehqr Oynapu')
