@@ -1,3 +1,5 @@
+# 0509 and 09510 (Medium/Testing)
+
 class Text
   def initialize(text)
     @text = text
