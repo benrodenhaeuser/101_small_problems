@@ -15,9 +15,9 @@ class Matrix
   private
 
   def transpose
-    number_of_rows = @rows[0].count
-    (0...number_of_rows).each_with_object([]) do |col_idx, cols|
-      cols << @rows.map { |row| row[col_idx] }
+    number_of_cols = @rows[0].count
+    (0...number_of_cols).map do |col_idx|
+      @rows.map { |row| row[col_idx] }
     end
   end
 
