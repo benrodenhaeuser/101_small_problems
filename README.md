@@ -1,3 +1,3 @@
 # README
 
-Launchschool small problems
+Programming exercises
