@@ -1,9 +1,5 @@
-module BookKeeping
-  VERSION = 3
-end
-
 class Game
-  class BowlingError < ArgumentError; end
+  class BowlingError < RuntimeError; end
 
   attr_reader :round
 
@@ -50,7 +46,7 @@ class Round
   end
 
   def done?
-    current_is_last_frame? && current_frame.done?
+    current_is_tenth_frame? && current_frame.done?
   end
 
   def add_frame
@@ -58,31 +54,23 @@ class Round
   end
 
   def new_empty_frame
-    (next_is_last_frame? ? FinalFrame : RegularFrame).new
+    (next_is_tenth_frame? ? TenthFrame : RegularFrame).new
   end
 
-  def next_is_last_frame?
+  def next_is_tenth_frame?
     frames.count == 9
   end
 
-  def current_is_last_frame?
+  def current_is_tenth_frame?
     frames.count == 10
   end
 
   def need_new_frame?
-    !current_is_last_frame? && current_frame.done?
+    !current_is_tenth_frame? && current_frame.done?
   end
 
   def score
-    raw_score + bonus_score
-  end
-
-  def raw_score
-    frames.map(&:raw_score).inject(:+)
-  end
-
-  def bonus_score
-    frames.map(&:bonus_score).inject(:+)
+    frames.map(&:raw_score).sum + frames.map(&:bonus_score).sum
   end
 end
 
@@ -103,11 +91,11 @@ class Frame
   end
 
   def raw_score
-    rolls.inject(0, :+)
+    rolls.sum(0)
   end
 
   def bonus_score
-    bonus.inject(0, :+)
+    bonus.sum(0)
   end
 
   def strike?
@@ -129,10 +117,6 @@ class Frame
 
   def <<(pins)
     rolls << pins
-  end
-
-  def no_rolls_so_far?
-    number_of_rolls.zero?
   end
 
   def first_roll
@@ -159,22 +143,19 @@ class RegularFrame < Frame
   end
 
   def need_bonus?
-    strike? && @bonus.count < 2 ||
-      spare? && @bonus.count < 1
+    strike? && @bonus.count < 2 || spare? && @bonus.count < 1
   end
 end
 
-class FinalFrame < Frame
+class TenthFrame < Frame
   def done?
-   case strike? || spare?
-   when true then number_of_rolls == 3
-   when false then number_of_rolls == 2
-   end
- end
+    (strike? || spare?) && number_of_rolls == 3 ||
+      (!strike? && !spare?) && number_of_rolls == 2
+  end
 
   def legal_roll?(pins)
     return false unless !done? && within_pin_range?(pins)
-    return true if no_rolls_so_far?
+    return true if number_of_rolls.zero?
 
     case number_of_rolls
     when 1
