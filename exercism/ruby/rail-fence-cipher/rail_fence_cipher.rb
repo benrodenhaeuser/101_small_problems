@@ -35,8 +35,8 @@ class RailFenceCipher
   end
 
   def letter_slots(by_axis)
-    @matrix.send(by_axis).flat_map do |line_of_matrix_cells|
-      line_of_matrix_cells.select { |cell| cell.respond_to?(:letter) }
+    @matrix.send(by_axis).flat_map do |line|
+      line.select { |cell| cell.respond_to?(:letter) }
     end
   end
 
@@ -46,13 +46,14 @@ class RailFenceCipher
     def initialize(rows, cols)
       @rows = rows
       @cols = cols
-      @cycle = (@rows * 2) - 2
 
-      @by_row = rails_with_empty_letter_slots
+      @by_row = matrix_with_letter_slots
       @by_col = @by_row.transpose
     end
 
-    def rails_with_empty_letter_slots
+    private
+
+    def matrix_with_letter_slots
       matrix = empty_matrix
 
       (0...@rows).each do |row|
@@ -64,26 +65,24 @@ class RailFenceCipher
       matrix
     end
 
-    private
-
     def empty_matrix
       (0...@rows).map { [nil] * @cols }
     end
 
     def on_rail?(row, col)
+      cycle = (@rows * 2) - 2
+
       @rows == 1 ||
-        ((row - col) % @cycle).zero? ||
-        ((row + col) % @cycle).zero?
+        ((row - col) % cycle).zero? ||
+        ((row + col) % cycle).zero?
+    end
+
+    LetterSlot = Struct.new(:letter) do
+      def to_s
+        letter
+      end
     end
   end
 
-  class LetterSlot
-    attr_accessor :letter
-
-    def to_s
-      @letter
-    end
-  end
-
-  private_constant :RailFenceMatrix, :LetterSlot
+  private_constant :RailFenceMatrix
 end
