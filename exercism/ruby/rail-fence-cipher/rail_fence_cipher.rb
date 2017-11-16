@@ -1,6 +1,4 @@
 class RailFenceCipher
-  VERSION = 1
-
   def self.encode(text, rails)
     new(text, rails).encode
   end
@@ -27,18 +25,18 @@ class RailFenceCipher
   private
 
   def record_text(by_axis)
-    slots_on_path(by_axis).each_with_index do |slot, index|
-      slot << @text[index]
+    letter_slots(by_axis).each_with_index do |letter_slot, index|
+      letter_slot.letter = @text[index]
     end
   end
 
   def retrieve_text(by_axis)
-    slots_on_path(by_axis).join
+    letter_slots(by_axis).join
   end
 
-  def slots_on_path(by_axis)
-    @matrix.send(by_axis).flat_map do |slots|
-      slots.select { |slot| slot }
+  def letter_slots(by_axis)
+    @matrix.send(by_axis).flat_map do |line_of_matrix_cells|
+      line_of_matrix_cells.select { |cell| cell.respond_to?(:letter) }
     end
   end
 
@@ -50,16 +48,16 @@ class RailFenceCipher
       @cols = cols
       @cycle = (@rows * 2) - 2
 
-      @by_row = zig_zag_matrix
+      @by_row = rails_with_empty_letter_slots
       @by_col = @by_row.transpose
     end
 
-    def zig_zag_matrix
+    def rails_with_empty_letter_slots
       matrix = empty_matrix
 
       (0...@rows).each do |row|
         (0...@cols).each do |col|
-          matrix[row][col] = '' if on_path?(row, col)
+          matrix[row][col] = LetterSlot.new if on_rail?(row, col)
         end
       end
 
@@ -69,15 +67,23 @@ class RailFenceCipher
     private
 
     def empty_matrix
-      (0...@rows).map { |row| [nil] * @cols }
+      (0...@rows).map { [nil] * @cols }
     end
 
-    def on_path?(row, col)
+    def on_rail?(row, col)
       @rows == 1 ||
-        (row - col) % @cycle == 0 ||
-        (row + col) % @cycle == 0
+        ((row - col) % @cycle).zero? ||
+        ((row + col) % @cycle).zero?
     end
   end
 
-  private_constant :RailFenceMatrix
+  class LetterSlot
+    attr_accessor :letter
+
+    def to_s
+      @letter
+    end
+  end
+
+  private_constant :RailFenceMatrix, :LetterSlot
 end
