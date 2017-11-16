@@ -7,7 +7,7 @@ class Matrix
   end
 
   def saddle_points
-    cells.select do |row_idx, col_idx|
+    index_pairs.select do |row_idx, col_idx|
       saddle_point?(row_idx, col_idx)
     end
   end
@@ -33,7 +33,7 @@ class Matrix
     end
   end
 
-  def cells
+  def index_pairs
     (0...rows.count).to_a.product((0...columns.count).to_a)
   end
 end

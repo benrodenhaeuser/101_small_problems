@@ -27,7 +27,7 @@ class MatrixTest < Minitest::Test
 
   def test_extract_a_column
     # skip
-    matrix = Matrix.new("1 2 3\n4 5 6\n7 8 9\n 8 7 6")
+    matrix = Matrix.new("1 2 3\n4 5 6\n7 8 9\n8 7 6")
     assert_equal [1, 4, 7, 8], matrix.columns[0]
   end
 
