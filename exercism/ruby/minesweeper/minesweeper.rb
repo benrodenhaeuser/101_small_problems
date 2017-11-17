@@ -9,60 +9,66 @@ class Board
 
   def initialize(input)
     @input = input
+    @width = rows[0].length
+    @height = rows.length
 
     raise ValueError unless valid?
   end
 
-  def valid?
-    row_length = input[0].length
-    input.slice(1...-1).all? do |row|
-      row.length == row_length && row[0] == row[-1] && row[0] == '|' &&
-        row.slice(1...-1).chars.all? { |char| [' ', '*'].include?(char) }
-    end
-  end
-
-  def matrix
-    @matrix ||= @input
-      .slice(1...-1)
-      .map(&:chars)
-      .map { |row| row.slice(1...-1) }
-      .map { |row| row.map { |marker| Square.new(marker) } }
-  end
-
-  def table
-    @table ||= matrix
-      .each_with_index
-      .with_object({}) do |(row, row_idx), the_table|
-        row.each_with_index do |square, col_idx|
-          the_table[[row_idx, col_idx]] = square
-        end
-      end
-  end
-
   def transform
-    table
-      .keys
-      .select { |square| table[square].marker != '*' && mines(*square) > 0 }
-      .each { |square| table[square].marker = mines(*square) }
+    index_pairs
+      .select { |pair| self[*pair].marker != '*' && mines(*pair) > 0 }
+      .each { |pair| self[*pair].marker = mines(*pair) }
 
     wrap(
-      matrix.map do |row|
+      rows.map do |row|
         wrap(row.map { |square| square.marker }.join, '|')
       end,
       [input.first]
     )
   end
 
-  def mines(row_index, col_index)
-    neighbors(row_index, col_index)
-      .select { |neighbor| @table[neighbor].marker == '*' }
+  private
+
+  def valid?
+    input.slice(1...-1).all? do |row|
+      row.length == @width + 2 && row[0] == row[-1] && row[0] == '|' &&
+        row.slice(1...-1).chars.all? { |char| [' ', '*'].include?(char) }
+    end
+  end
+
+  def rows
+    @rows ||= input
+      .slice(1...-1)
+      .map(&:chars)
+      .map { |row| row.slice(1...-1) }
+      .map { |row| row.map { |marker| Square.new(marker) } }
+  end
+
+  def squares
+    @squares ||= rows.flatten
+  end
+
+  def index_pairs
+    @index_pairs ||= (0...@width).to_a.product((0...@height).to_a)
+  end
+
+  def [](x, y)
+    return nil if x < 0 || x >= @width
+    return nil if y < 0 || y >= @height
+    squares[x + y * @width]
+  end
+
+  def mines(x, y)
+    neighbors(x, y)
+      .select { |neighbor| self[*neighbor].marker == '*' }
       .count
   end
 
-  def neighbors(row_idx, col_idx)
-    (row_idx - 1..row_idx + 1).to_a
-      .product((col_idx - 1..col_idx + 1).to_a)
-      .select { |square| @table[square] }
+  def neighbors(x, y)
+    (x - 1..x + 1).to_a
+      .product((y - 1..y + 1).to_a)
+      .select { |pair| self[*pair] }
   end
 
   Square = Struct.new(:marker)

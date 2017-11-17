@@ -70,8 +70,6 @@ class MinesweeperTest < Minitest::Test
     assert_equal out, Board.transform(inp)
   end
 
-  # validation problems:
-
   def test_different_len
     # skip
     inp = ['+-+', '| |', '|*  |', '|  |', '+-+']
