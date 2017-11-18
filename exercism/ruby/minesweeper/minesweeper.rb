@@ -12,7 +12,7 @@ class Board
   def initialize(input)
     @input = input
     @width = @input[0].length
-    @height = height = @input.length
+    @height = @input.length
 
     raise ValueError unless valid_input?
   end
