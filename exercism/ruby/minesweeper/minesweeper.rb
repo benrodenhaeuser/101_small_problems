@@ -18,9 +18,9 @@ class Board
   end
 
   def transform
-    addresses
-      .select { |address| self[address].marker == LAND && mines(address) > 0 }
-      .each { |address| self[address].marker = mines(address) }
+    locations
+      .select { |loc| self[loc].marker == LAND && mines(loc) > 0 }
+      .each { |loc| self[loc].marker = mines(loc) }
 
     grid.map { |row| row.map(&:marker).join }
   end
@@ -28,32 +28,33 @@ class Board
   private
 
   def grid
-    @grid ||= @input
-              .map(&:chars)
-              .map { |row| row.map { |marker| Square.new(marker) } }
+    @grid ||=
+      @input.map(&:chars)
+            .map { |row| row.map { |marker| Marker.new(marker) } }
   end
 
-  Square = Struct.new(:marker)
+  Marker = Struct.new(:marker)
 
-  def addresses
-    @addresses ||= (0...@width).to_a.product((0...@height).to_a)
+  def locations
+    @locations ||=
+      (0...@width).to_a.product((0...@height).to_a)
   end
 
-  def [](address)
-    x, y = address
+  def [](location)
+    x, y = location
     return nil if x < 0 || x >= @width
     return nil if y < 0 || y >= @height
     grid[y][x]
   end
 
-  def mines(address)
-    neighbors(address)
+  def mines(location)
+    neighbors(location)
       .select { |neighbor| self[neighbor].marker == MINE }
       .count
   end
 
-  def neighbors(address)
-    x, y = address
+  def neighbors(location)
+    x, y = location
     (x - 1..x + 1).to_a.product((y - 1..y + 1).to_a)
   end
 
