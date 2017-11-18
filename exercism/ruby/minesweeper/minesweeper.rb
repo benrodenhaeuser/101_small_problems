@@ -18,11 +18,11 @@ class Board
   end
 
   def transform
-    locations
-      .select { |loc| self[*loc].marker == LAND && mines(*loc) > 0 }
-      .each { |loc| self[*loc].marker = mines(*loc) }
+    addresses
+      .select { |address| self[address].marker == LAND && mines(address) > 0 }
+      .each { |address| self[address].marker = mines(address) }
 
-    to_output
+    grid.map { |row| row.map(&:marker).join }
   end
 
   private
@@ -35,28 +35,26 @@ class Board
 
   Square = Struct.new(:marker)
 
-  def locations
-    @locations ||= (0...@width).to_a.product((0...@height).to_a)
+  def addresses
+    @addresses ||= (0...@width).to_a.product((0...@height).to_a)
   end
 
-  def [](x, y)
+  def [](address)
+    x, y = address
     return nil if x < 0 || x >= @width
     return nil if y < 0 || y >= @height
     grid[y][x]
   end
 
-  def mines(x, y)
-    neighbors(x, y)
-      .select { |neighbor| self[*neighbor].marker == MINE }
+  def mines(address)
+    neighbors(address)
+      .select { |neighbor| self[neighbor].marker == MINE }
       .count
   end
 
-  def neighbors(x, y)
+  def neighbors(address)
+    x, y = address
     (x - 1..x + 1).to_a.product((y - 1..y + 1).to_a)
-  end
-
-  def to_output
-    grid.map { |row| row.map(&:marker).join }
   end
 
   def valid_input?
