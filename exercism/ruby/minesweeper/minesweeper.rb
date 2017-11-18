@@ -18,9 +18,9 @@ class Board
   end
 
   def transform
-    index_pairs
-      .select { |pair| self[*pair].marker == LAND && mines(*pair) > 0 }
-      .each { |pair| self[*pair].marker = mines(*pair) }
+    locations
+      .select { |loc| self[*loc].marker == LAND && mines(*loc) > 0 }
+      .each { |loc| self[*loc].marker = mines(*loc) }
 
     to_output
   end
@@ -35,8 +35,8 @@ class Board
 
   Square = Struct.new(:marker)
 
-  def index_pairs
-    @index_pairs ||= (0...@width).to_a.product((0...@height).to_a)
+  def locations
+    @locations ||= (0...@width).to_a.product((0...@height).to_a)
   end
 
   def [](x, y)
