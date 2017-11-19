@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative 'ocr_numbers'
+require_relative 'nick'
 
 # Common test data version: 1.0.0 80782b6
 class OcrNumbersTest < Minitest::Test
