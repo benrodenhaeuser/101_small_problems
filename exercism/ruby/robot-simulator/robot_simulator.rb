@@ -1,9 +1,12 @@
 class Robot
+  DIRECTIONS = [:north, :east, :south, :west]
+
   def bearing
     @direction.current
   end
 
   def orient(direction)
+    raise ArgumentError unless DIRECTIONS.include?(direction)
     @direction = Direction.new(direction)
   end
 
@@ -29,10 +32,7 @@ class Robot
 
   class Direction
     def initialize(direction)
-      @directions = [:north, :east, :south, :west]
-
-      raise ArgumentError unless @directions.include?(direction)
-
+      @directions = DIRECTIONS.dup
       @directions.rotate! until current == direction
     end
 
