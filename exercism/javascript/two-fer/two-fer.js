@@ -1,8 +1,8 @@
-var TwoFer = function () {};
+var TwoFer = function TwoFer() {};
 
-TwoFer.prototype.twoFer = function (who) {
-  if (!who) { who = 'you'; }
-  return "One for " + who + ", one for me.";
+TwoFer.prototype.twoFer = function twoFer(who) {
+  var otherPerson = who || 'you';
+  return 'One for ' + otherPerson + ', one for me.';
 };
 
 module.exports = TwoFer;
