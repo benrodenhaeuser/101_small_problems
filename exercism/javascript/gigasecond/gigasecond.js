@@ -3,11 +3,9 @@ function Gigasecond(date) {
   this.gigaSecond = 1000000000;
 }
 
-// does not handle the 1959 tests correctly.
-
 Gigasecond.prototype.date = function date() {
   var laterDate = new Date(this.startingDate.getTime());
-  laterDate.setSeconds(laterDate.getSeconds() + this.gigaSecond)
+  laterDate.setUTCSeconds(laterDate.getUTCSeconds() + this.gigaSecond)
   return laterDate;
 }
 
