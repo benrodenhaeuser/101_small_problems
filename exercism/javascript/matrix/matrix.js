@@ -3,7 +3,7 @@ function Matrix(str) {
     .split('\n')
     .map(rowStr => rowStr
       .split(' ')
-      .map(numStr => Number(numStr)));
+      .map(Number));
 
   this.columns = this.transpose();
 }

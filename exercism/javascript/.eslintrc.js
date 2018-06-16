@@ -1,6 +1,4 @@
 module.exports = {
     "extends": "airbnb/legacy",
+    // "airbnb-base" for es6, "airbnb/legacy" for es5
 };
-
-
-// the alternative would be "airbnb-base" for es6 rules
