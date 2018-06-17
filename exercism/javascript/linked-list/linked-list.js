@@ -4,54 +4,59 @@ function Node(data) {
   this.prev = null;
 }
 
+Node.prototype.append = function append(node) {
+  this.next = node;
+  node.prev = this;
+};
+
+Node.prototype.prepend = function prepend(node) {
+  this.prev = node;
+  node.next = this;
+};
+
 function LinkedList() {
   this.first = null;
   this.last = null;
 }
 
-LinkedList.prototype.push = function push(data) {
-  if (this.last) {
-    this.last.next = new Node(data);
-    this.last.next.prev = this.last;
-    this.last = this.last.next;
-  } else {
-    this.last = new Node(data);
-    this.first = this.last;
-  }
-};
+Object.defineProperty(LinkedList.prototype, "empty", {
+  get: function() { return this.last === null; }
+});
 
-LinkedList.prototype.unshift = function unshift(data) {
-  if (this.first) {
-    this.first.prev = new Node(data);
-    this.first.prev.next = this.first;
-    this.first = this.first.prev;
+LinkedList.prototype.push = function push(data) {
+  var node = new Node(data);
+
+  if (this.empty) {
+    this.last = node;
+    this.first = node;
   } else {
-    this.first = new Node(data);
-    this.last = this.first;
+    this.last.append(node);
+    this.last = node;
   }
 };
 
 LinkedList.prototype.pop = function pop() {
   var data = this.last.data;
-  if (this.last !== this.first) {
-    this.last.prev.next = null;
-    this.last = this.last.prev;
-  } else {
-    this.last = null;
-    this.first = null;
-  }
+  this.last = this.last.prev;
+  this.last ? this.last.next = null : this.first = null;
   return data;
+};
+
+LinkedList.prototype.unshift = function unshift(data) {
+  var node = new Node(data);
+  if (this.empty) {
+    this.first = node;
+    this.last = node;
+  } else {
+    this.first.prepend(node);
+    this.first = node;
+  }
 };
 
 LinkedList.prototype.shift = function shift() {
   var data = this.first.data;
-  if (this.last !== this.first) {
-    this.first.next.prev = null;
-    this.first = this.first.next;
-  } else {
-    this.first = null;
-    this.last = null;
-  }
+  this.first = this.first.next;
+  this.first ? this.first.prev = null : this.last = null;
   return data;
 };
 
@@ -80,7 +85,7 @@ LinkedList.prototype.delete = function remove(data) {
       } else if (node.next) {
         node.next.prev = null;
         this.first = node.next;
-      } else {                     
+      } else {
         this.first = null;
         this.last = null;
       }
