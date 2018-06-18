@@ -2,7 +2,7 @@ class Binary {
   constructor(str) {
     this.str = str;
   }
-  // better :)
+  
   toDecimal(mode = 2) {
     var pos = this.str.split("").reverse();
     var total = 0;
