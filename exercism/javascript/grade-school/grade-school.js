@@ -5,7 +5,9 @@ function School() {
 
 School.prototype.add = function add(student, level) {
   this.students.push([student, level]);
-  this.grades.push(level);
+  if (this.grades.indexOf(level) === -1) {
+    this.grades.push(level);
+  }
   this.grades.sort();
 };
 
