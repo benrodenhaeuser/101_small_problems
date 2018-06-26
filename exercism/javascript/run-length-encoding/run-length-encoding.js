@@ -7,7 +7,7 @@ const RLE = {
       if (segment.length > 1) {
         return String(segment.length) + segment[0];
       }
-      return segment[0];
+      return segment;
     });
     return encodedSegments.join('');
   },
