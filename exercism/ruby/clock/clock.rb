@@ -21,7 +21,7 @@ class Clock
   end
 
   def +(minutes)
-    self.class.new(@hours, @minutes + minutes)
+    new(@hours, @minutes + minutes)
   end
 
   def ==(other_clock)
