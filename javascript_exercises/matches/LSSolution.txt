@@ -1,0 +1,5 @@
+number of positive words: 9
+positive words: nobler, fortune, devoutly, dream, dreams, respect, love, patient, resolution
+number of negative words: 10
+negative words: troubles, die, heartache, die, death, scorns, oppressor's, despised, weary, death
+sentiment: negative
